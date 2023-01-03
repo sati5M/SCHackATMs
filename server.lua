@@ -6,15 +6,6 @@ local itemsToGive = {
     {["lockpick"] = 1, ["laptop"] = 4},
 }
 
-QBCore.Functions.CreateUseableItem('weedbox' , function(source, item)
-    local Player = QBCore.Functions.GetPlayer(source)
-    local item = Player.Functions.GetItemByName(item.name)
-    if item.amount > 0 and not inHack[source] then
-        Player.Functions.RemoveItem(item.name, 1)
-        inHack[source] = true
-        TriggerClientEvent("SCHackATMS:StartHack", source)
-    end
-end)
 RegisterNetEvent("SCHackATMs:HackComplete", function(objCoords)
     local source = source
     if inHack[source] == objCoords then
@@ -31,6 +22,7 @@ RegisterNetEvent("SCHackATMs:HackComplete", function(objCoords)
 
     end
 end)
+
 RegisterNetEvent("SCHackATMS:CancelHack", function(objCoords)
     local source = source
     if inHack[source] == objCoords then
@@ -38,13 +30,20 @@ RegisterNetEvent("SCHackATMS:CancelHack", function(objCoords)
         QBCore.Functions.Notify(source, 'Hack cancelled.', 'error', 7500)
     end
 end) 
+
 QBCore.Functions.CreateCallback('SCHackATMS:ATMCheck', function(source, cb, coords)
-    if not hackedATMs[coords] and inHack[source] then
-        inHack[source] = coords
-        hackedATMs[coords] = true
-        cb(true)
-    else
-        QBCore.Functions.Notify(source, 'This ATM has already been robbed!', 'error', 7500)
-        cb(false)
+    local Player = QBCore.Functions.GetPlayer(source)
+    local item = Player.Functions.GetItemByName("laptop")
+    if item ~= nil then
+        if item.amount > 0 then
+            if not hackedATMs[coords] then
+                inHack[source] = coords
+                hackedATMs[coords] = true
+                cb(true)
+            else
+                QBCore.Functions.Notify(source, 'This ATM has already been robbed!', 'error', 7500)
+            end
+        end
     end
+    cb(false)
 end)
