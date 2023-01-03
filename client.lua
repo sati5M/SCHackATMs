@@ -1,8 +1,18 @@
 QBCore = exports['qb-core']:GetCoreObject()
+local atmProps = {
+    `prop_atm_01`,
+    `prop_atm_02`,
+    `prop_atm_03`,
+    `prop_fleeca_atm`
+}
+
 RegisterNetEvent("SCHackATMS:StartHack", function()
     local ped = PlayerPedId()
     local pedCoords = GetEntityCoords(ped)
-    local object = GetClosestObjectOfType(pedCoords, 5.0, `prop_fleeca_atm`, false)
+    local object
+    for k, v in pairs(atmProps) do
+        object = GetClosestObjectOfType(pedCoords, 5.0, v, false)
+    end 
     if DoesEntityExist(object) then
         local objectCoords = GetEntityCoords(object)
         QBCore.Functions.TriggerCallback('SCHackATMS:ATMCheck', function(canRob)
